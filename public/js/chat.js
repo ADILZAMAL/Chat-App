@@ -4,6 +4,10 @@ const messageFormInput = document.querySelector('input')
 const messageFormButton = messageForm.querySelector('button')
 const shareLocationButton = document.querySelector('#share-location')
 
+//option
+const {username, room} = Qs.parse(location.search, {ignoreQueryPrefix: true})
+console.log(username, room)
+
 messageForm.addEventListener('submit',(event)=>{
     event.preventDefault(true)
     messageFormButton.setAttribute('disabled', 'disabled')
@@ -63,3 +67,5 @@ socket.on('locationMessage', (url)=>{
     document.querySelector('#message').appendChild(shareLocationTemplateEl)
 
 })
+
+socket.emit('join', {username, room})

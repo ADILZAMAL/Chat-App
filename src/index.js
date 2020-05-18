@@ -9,9 +9,13 @@ const server = require('http').createServer(app)
 const io = socketio(server);
 
 io.on('connection', (socket)=>{
-    socket.emit('message', genrateMessage('Welcome'))
+ 
 
-    socket.broadcast.emit('message', genrateMessage('A new user has joined'));
+    socket.on('join', ({username, room})=>{
+        socket.join(room)
+        socket.emit('message', genrateMessage('Welcome'))
+        socket.broadcast.to(room).emit('message', genrateMessage(`${username} has joined`));
+    })
 
     socket.on('sendMessage',(message, callback)=>{
         const filter = new Filter() 
