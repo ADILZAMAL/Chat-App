@@ -48,24 +48,38 @@ shareLocationButton.addEventListener('click',()=>{
 socket.on('message',(message)=>{
     const templateEl = document.querySelector('#message-template').content.cloneNode(true)
     const p1 = templateEl.querySelector('.message #p1')
-    p1.querySelector('#user-name').textContent =  'some user name'
+    p1.querySelector('#user-name').textContent =  message.username
     p1.querySelector('#time-stamp').textContent = moment(message.createdAt).format('h:mm a')
     const p2 = templateEl.querySelector('.message #p2')
     p2.textContent = message.text
     document.querySelector('#message').appendChild(templateEl)
 })
 
-socket.on('locationMessage', (url)=>{
+socket.on('locationMessage', (message)=>{
     const shareLocationTemplateEl = document.querySelector('#shareLocation-template').content.cloneNode(true)
     const p1 = shareLocationTemplateEl.querySelector('#p1')
     const a = shareLocationTemplateEl.querySelector('#p2 a')
-    p1.querySelector('#user-name').textContent = 'some user name'
-    p1.querySelector('#time-stamp').textContent = moment(url.createdAt).format('h:mm a')
+    p1.querySelector('#user-name').textContent =message.username
+    p1.querySelector('#time-stamp').textContent = moment(message.username.createdAt).format('h:mm a')
     a.textContent = 'My current location'
-    a.setAttribute('href', url.text)
+    a.setAttribute('href', message.text)
     document.querySelector('#message').appendChild(shareLocationTemplateEl)
 
 })
+
+socket.on('roomData', (({room , users})=>{
+    const chatSidebar = document.querySelector('.chat__sidebar')
+    const h3 = chatSidebar.querySelector('h3')
+    const ul = chatSidebar.querySelector('ul')
+    ul.innerHTML = ' ' 
+    h3.textContent = room
+    users.forEach((user)=>{
+        const li = document.createElement('li')
+        li.textContent = user.username
+        ul.appendChild(li)
+    })
+
+})) 
 
 socket.emit('join', {username, room}, (error)=>{
     if(error){

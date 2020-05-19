@@ -36,15 +36,14 @@ const removeUser = (id) =>{
 const getUser = (id) =>{
     const user = users.find(user=>user.id === id)
     if(!user)
-        return {
-            error: 'User not found'
-        }
-    return user    
+    return {
+        error: 'User not found'
+    }
+    return { user }    
 }
 
 const getUserInRoom = (room) =>{
-    room = room.trim().toLowerCase()
-    const userInRoom = users.filter(user=> user.room === room)
+    const userInRoom = users.filter(user=>user.room === room)
     return userInRoom
 }
 

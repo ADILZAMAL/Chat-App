@@ -9,12 +9,17 @@
 </head>
 <body>
     <div class="chat">
-        <div class="chat__sidebar"></div>
+        <div class="chat__sidebar">
+            <h2>Users</h2>
+            <h3 class="list-title"></h3>
+            <ul class="users">
+            </ul>
+        </div>
         <div class="chat__main">
             <div id="message" class="chat__messages"></div>
             <div class="compose">
                 <form action="">
-                    <input name="message" type="text" placeholder="Enter your message">
+                    <input name="message" type="text" placeholder="Enter your message" required autocomplete="off">
                     <button id="btn" type="submit">send</button>
                 </form>
                 <button id="share-location">share location</button>
@@ -41,7 +46,6 @@
             <p id="p2"><a href="" target="_blank">current Location</a></p>
         </div>
     </template>
-    
     <script src="socket.io/socket.io.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.25.3/moment.min.js" integrity="sha256-C66CaAImteEKZPYvgng9j10J/45e9sAuZyfPYCwp4gE=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.6.0/qs.min.js"></script>

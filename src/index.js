@@ -18,31 +18,52 @@ io.on('connection', (socket)=>{
             return callback(error)
         }
         socket.join(user.room)
-        socket.emit('message', genrateMessage('Welcome'))
-        socket.broadcast.to(user.room).emit('message', genrateMessage(`${user.username} has joined`));
+        io.to(user.room).emit('roomData', {
+            room : user.room,
+            users: getUserInRoom(user.id)
+        })
+        io.to(user.room).emit('roomData', {
+            room : user.room,
+            users: getUserInRoom(user.room)
+        })
+        socket.emit('message', genrateMessage('Admin', 'Welcome'))
+        socket.broadcast.to(user.room).emit('message', genrateMessage(user.username,`${user.username} has joined`));
 
         callback()
     })
 
     socket.on('sendMessage',(message, callback)=>{
-        const filter = new Filter() 
-         message = genrateMessage(message)
+        const filter = new Filter()
+        const { error, user }=getUser(socket.id) 
+        if(error){
+            return callback(error)
+        }
+         message = genrateMessage(user.username,message)
         if(filter.isProfane(message.text))
         {
             return callback('Profanity is not allowed!')
         }
-        io.emit('message', message)
+        io.to(user.room).emit('message', message)
         callback()
     })
 
     socket.on('sendLocation',(coords, callback)=>{
-        io.emit('locationMessage', genrateMessage(`https://google.com/maps?q=${coords.latitude},${coords.longitude}`))
+        const { error, user} = getUser(socket.id)
+        if(error){
+            callback(error)
+        }
+        io.to(user.room).emit('locationMessage', genrateMessage(user.username,`https://google.com/maps?q=${coords.latitude},${coords.longitude}`))
         callback()
     })
     socket.on('disconnect', ()=>{
         const user = removeUser(socket.id)
+        
         if(user){
-            io.to(user.room).emit('message', genrateMessage(`${user.username} has left!`))
+            io.to(user.room).emit('message', genrateMessage(user.username,`${user.username} has left!`))
+            io.to(user.room).emit('roomData', {
+                room : user.room,
+                users: getUserInRoom(user.room)
+            })
         }
 
     })
