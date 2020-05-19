@@ -6,7 +6,6 @@ const shareLocationButton = document.querySelector('#share-location')
 
 //option
 const {username, room} = Qs.parse(location.search, {ignoreQueryPrefix: true})
-console.log(username, room)
 
 messageForm.addEventListener('submit',(event)=>{
     event.preventDefault(true)
@@ -68,4 +67,9 @@ socket.on('locationMessage', (url)=>{
 
 })
 
-socket.emit('join', {username, room})
+socket.emit('join', {username, room}, (error)=>{
+    if(error){
+        alert(error)
+        location.href = '/'
+    }
+})

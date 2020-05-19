@@ -3,6 +3,7 @@ const path = require('path')
 const socketio = require('socket.io')
 const Filter = require('bad-words')
 const { genrateMessage }= require('../src/utils/message')
+const { addUsers, removeUser, getUser, getUserInRoom } = require('./utils/user')
 
 const app = express()
 const server = require('http').createServer(app)
@@ -11,10 +12,16 @@ const io = socketio(server);
 io.on('connection', (socket)=>{
  
 
-    socket.on('join', ({username, room})=>{
-        socket.join(room)
+    socket.on('join', ({username, room}, callback)=>{
+        const {error, user} = addUsers({id: socket.id, username, room})
+        if(error){
+            return callback(error)
+        }
+        socket.join(user.room)
         socket.emit('message', genrateMessage('Welcome'))
-        socket.broadcast.to(room).emit('message', genrateMessage(`${username} has joined`));
+        socket.broadcast.to(user.room).emit('message', genrateMessage(`${user.username} has joined`));
+
+        callback()
     })
 
     socket.on('sendMessage',(message, callback)=>{
@@ -33,7 +40,11 @@ io.on('connection', (socket)=>{
         callback()
     })
     socket.on('disconnect', ()=>{
-        io.emit('message', genrateMessage('A user has left chat room'))
+        const user = removeUser(socket.id)
+        if(user){
+            io.to(user.room).emit('message', genrateMessage(`${user.username} has left!`))
+        }
+
     })
 })
 

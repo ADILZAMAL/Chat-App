@@ -2,7 +2,7 @@ const users = []
 
 const addUsers = ({id, username, room}) =>{
     username = username.trim().toLowerCase()
-    room    = username.trim().toLowerCase()
+    room    = room.trim().toLowerCase()
 
     //validate the data
     if(!username || !room)
@@ -24,9 +24,33 @@ const addUsers = ({id, username, room}) =>{
 }
 
 const removeUser = (id) =>{
-    const index = users.findIndex(users=> users.id===id)
+    const index = users.findIndex((user)=>{ return user.id == id})
     if(index !==-1)
     {
-        return users.splice(index,1).[0]
+        const user = users.splice(index,1)
+        //console.log('HEF' ,user[0])
+        return user[0]
     }
+}
+
+const getUser = (id) =>{
+    const user = users.find(user=>user.id === id)
+    if(!user)
+        return {
+            error: 'User not found'
+        }
+    return user    
+}
+
+const getUserInRoom = (room) =>{
+    room = room.trim().toLowerCase()
+    const userInRoom = users.filter(user=> user.room === room)
+    return userInRoom
+}
+
+module.exports = {
+    addUsers,
+    removeUser,
+    getUser,
+    getUserInRoom
 }
